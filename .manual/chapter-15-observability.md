@@ -244,6 +244,16 @@ spans. Inference adds spans for request preparation, cache processing,
 queueing, prefill, token generation, and selected model operations. Liveness
 and readiness routes are excluded from sampling.
 
+Chat completion spans carry the OTel GenAI semantic convention attributes
+`gen_ai.input.messages` and `gen_ai.output.messages` (request messages in the
+convention's `role`/`parts` structure, and the generated reasoning, text, and
+tool calls). Each attribute is truncated at 16KB. Note that the conventions
+treat content capture as opt-in, while Kronk records it by default: prompts
+and responses become visible to anyone with access to the tracing backend, so
+restrict access accordingly or lower `--tempo-probability` where that
+matters. GenAI-aware backends such as Langfuse map these attributes to
+structured input/output views automatically.
+
 Set the probability to `1.0` when every trace is needed for focused debugging,
 or `0.0` to disable sampling. Choose a lower nonzero value for sustained
 production traffic based on its volume and storage budget.

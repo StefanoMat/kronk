@@ -275,6 +275,8 @@ func (e *batchEngine) finishSlot(s *slot, err error) {
 		s.span.RecordError(err)
 		s.span.SetAttributes(
 			attribute.String("request_status", status),
+			attribute.String("gen_ai.input.messages", spanInputMessages(s.job.d)),
+			attribute.String("gen_ai.output.messages", spanOutputMessages(s.finishReason, &s.finalReasoning, &s.finalContent, s.respToolCalls)),
 			attribute.Int("prompt_tokens", s.nPrompt),
 			attribute.Int("reasoning_tokens", s.reasonTokens),
 			attribute.Int("completion_tokens", s.completionTokens),
@@ -443,6 +445,8 @@ func (e *batchEngine) finishSlot(s *slot, err error) {
 
 	// Add span attributes and end span.
 	s.span.SetAttributes(
+		attribute.String("gen_ai.input.messages", spanInputMessages(s.job.d)),
+		attribute.String("gen_ai.output.messages", spanOutputMessages(s.finishReason, &s.finalReasoning, &s.finalContent, s.respToolCalls)),
 		attribute.Int("prompt_tokens", s.nPrompt),
 		attribute.Int("reasoning_tokens", s.reasonTokens),
 		attribute.Int("completion_tokens", s.completionTokens),
